@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InfoController extends Controller
@@ -59,5 +60,16 @@ class InfoController extends Controller
         $activeMenu = 'info';
 
         return view('kader.informasi.artikel.list', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+    }
+    
+    public function lihatArtikel()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Kelola Informasi'
+        ];
+
+        $activeMenu = 'info';
+
+        return view('kader.informasi.artikel.detail', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 }
