@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pemeriksaan;
+use App\Models\PemeriksaanLansia;
+use App\Models\Penduduk;
 use Illuminate\Http\Request;
 
 class LansiaResource extends Controller
@@ -17,7 +20,12 @@ class LansiaResource extends Controller
 
         $activeMenu = 'lansia';
 
-        return view('kader.lansia.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        /**
+         * Retrieve data for filter feature
+         */
+        $penduduks = Pemeriksaan::with('penduduk')->where('golongan', 'lansia')->get();
+
+        return view('kader.lansia.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'penduduks' => $penduduks]);
     }
 
     /**
@@ -47,13 +55,15 @@ class LansiaResource extends Controller
      */
     public function show(string $id)
     {
+        $lansiaData = Pemeriksaan::with('pemeriksaan_lansia', 'penduduk')->find($id);
+
         $breadcrumb = (object)[
             'title' => 'Pemeriksaan Lansia'
         ];
 
         $activeMenu = 'lansia';
 
-        return view('kader.lansia.detail', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        return view('kader.lansia.detail', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'lansiaData' => $lansiaData]);
     }
 
     /**
@@ -83,6 +93,20 @@ class LansiaResource extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $check = Pemeriksaan::find($id);
+        if(!$check) {
+            return redirect()->intended('kader/lansia')->with('error', 'Data pemeriksaan lansia tidak ditemukan');
+        }
+
+        try {
+            /**
+             * delete pemeriksaans column that also cascade to pemeriksaan_lansias column, because we use cascadeOnDelete() in migration
+             */
+            Pemeriksaan::destroy($id);
+
+            return redirect()->intended('kader/lansia')->with('success', 'Data pemeriksaan lansia berhasil dihapus');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->intended('kader/lansia')->with('error', 'Data pemeriksaan lansia gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
+        }
     }
 }

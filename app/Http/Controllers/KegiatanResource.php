@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kegiatan;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class KegiatanResource extends Controller
@@ -17,7 +19,12 @@ class KegiatanResource extends Controller
 
         $activeMenu = 'info';
 
-        return view('kader.informasi.kegiatan.list', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+        /**
+         * Retrieve data for filter feature
+         */
+        $kegiatans = Kegiatan::get(['kegiatan_id', 'nama']);
+
+        return view('kader.informasi.kegiatan.list', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'kegiatans' => $kegiatans]);
     }
 
     /**
@@ -63,6 +70,20 @@ class KegiatanResource extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $check = Kegiatan::find($id);
+        if(!$check) {
+            return redirect()->intended('kader/informasi/kegiatan')->with('error', 'Data kegiatan tidak ditemukan');
+        }
+
+        try {
+            /**
+             * delete pemeriksaans column that also cascade to pemeriksaan_bayis column, because we use cascadeOnDelete() in migration
+             */
+            Kegiatan::destroy($id);
+
+            return redirect()->intended('kader/informasi/kegiatan')->with('success', 'Data kegiatan berhasil dihapus');
+        } catch (QueryException) {
+            return redirect()->intended('kader/informasi/kegiatan')->with('error', 'Data kegiatan gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
+        }
     }
 }

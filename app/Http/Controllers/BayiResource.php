@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pemeriksaan;
+use App\Models\PemeriksaanBayi;
 use App\Models\Penduduk;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class BayiResource extends Controller
@@ -19,6 +21,9 @@ class BayiResource extends Controller
 
         $activeMenu = 'bayi';
 
+        /**
+         * Retrieve data for filter feature
+         */
         $penduduks = Pemeriksaan::with('penduduk')->where('golongan', 'bayi')->get();
 
         return view('kader.bayi.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'penduduks' => $penduduks]);
@@ -51,7 +56,7 @@ class BayiResource extends Controller
      */
     public function show(string $id)
     {
-        $bayiData = Pemeriksaan::with('pemeriksaanBayi', 'penduduk')->find($id);
+        $bayiData = Pemeriksaan::with('pemeriksaan_bayi', 'penduduk')->find($id);
         $parentData = Penduduk::where('NKK', $bayiData->penduduk->NKK)
             ->where('hubungan_keluarga', '!=', 'Anak')
             ->get(['nama', 'hubungan_keluarga']);
@@ -92,6 +97,20 @@ class BayiResource extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $check = Pemeriksaan::find($id);
+        if(!$check) {
+            return redirect()->intended('kader/bayi')->with('error', 'Data pemeriksaan bayi tidak ditemukan');
+        }
+
+        try {
+            /**
+             * delete pemeriksaans column that also cascade to pemeriksaan_bayis column, because we use cascadeOnDelete() in migration
+             */
+            Pemeriksaan::destroy($id);
+
+            return redirect()->intended('kader/bayi')->with('success', 'Data pemeriksaan bayi berhasil dihapus');
+        } catch (QueryException) {
+            return redirect()->intended('kader/bayi')->with('error', 'Data pemeriksaan bayi gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
+        }
     }
 }
