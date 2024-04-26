@@ -6,7 +6,7 @@ use App\Models\Penduduk;
 use ArielMejiaDev\LarapexCharts\BarChart;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 
-class KunjunganChart
+class KunjunganLandingPage
 {
     protected LarapexChart $chart;
 
@@ -40,7 +40,7 @@ class KunjunganChart
             ->addData('Pengunjung', [$rt[1], $rt[2], $rt[3], $rt[4], $rt[5], $rt[6]])
             ->setXAxis(['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05', 'RT 06'])
             ->setFontFamily('Plus Jakarta Sans')
-            ->setHeight(200)
+            ->setHeight(341)
             ->setMarkers(['#F87171', '#3498DB'], 1, 2)
         ;
     }
