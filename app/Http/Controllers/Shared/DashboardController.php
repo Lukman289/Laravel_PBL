@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Shared;
 
+use App\Charts\KunjunganChart;
+use App\Http\Controllers\Controller;
 use App\Models\Kegiatan;
 use App\Models\Pemeriksaan;
-use Illuminate\Http\Request;
-use App\Charts\KunjunganChart;
 
-class DashboardController extends Controller
+class
+DashboardController extends Controller
 {
     public function indexKader(KunjunganChart $chart){
         $breadcrumb = (object) [
@@ -32,11 +33,13 @@ class DashboardController extends Controller
     private function indexData(): array
     {
         return $data = [
-            'golongan' => Pemeriksaan::selectRaw('count(pemeriksaan_id) as total, golongan')
+            'golongan_subMonth' => Pemeriksaan::selectRaw('count(pemeriksaan_id) as total, golongan')
                 ->whereDate('tgl_pemeriksaan', '>=', now()->subMonth())
                 ->groupBy('golongan')->get(),
+            'golongan_all' => Pemeriksaan::selectRaw('count(pemeriksaan_id) as total, golongan')
+                ->groupBy('golongan')->get(),
             'status' => Pemeriksaan::selectRaw('count(pemeriksaan_id) as total, golongan')
-                ->whereDate('tgl_pemeriksaan', '>=', now()->subMonth())
+                ->whereBetween('tgl_pemeriksaan', [now()->subMonth(), now()])
                 ->where('status', '=', 'sakit')
                 ->groupBy('golongan')->get(),
             'kegiatan' => Kegiatan::all(),

@@ -1,12 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Kader;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Kader\Bayi\StoreBayiRequest;
+use App\Http\Requests\Kader\Bayi\UpdateBayiRequest;
+use App\Http\Requests\Kader\Pemeriksaan\StorePemeriksaanRequest;
+use App\Http\Requests\Kader\Pemeriksaan\UpdatePemeriksaanRequest;
 use App\Models\Pemeriksaan;
 use App\Models\PemeriksaanBayi;
 use App\Models\Penduduk;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class BayiResource extends Controller
 {
@@ -40,7 +45,7 @@ class BayiResource extends Controller
 
         $activeMenu = 'bayi';
 
-        $bayisData = Penduduk::whereRaw('TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) <= 5')->get(['NIK', 'nama', 'alamat', 'NKK', 'tgl_lahir']);
+        $bayisData = Penduduk::whereRaw('TIMESTAMPDIFF(YEAR, tgl_lahir, CURDATE()) <= 5')->get(['penduduk_id', 'nama', 'alamat', 'NKK', 'tgl_lahir']);
 
         $parentsData = Penduduk::where('hubungan_keluarga', '!=', 'Anak')
             ->get(['nama', 'hubungan_keluarga', 'NKK']);
@@ -48,20 +53,18 @@ class BayiResource extends Controller
         return view('kader.bayi.tambah', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, 'bayisData' => $bayisData, 'parentsData' => $parentsData]);
     }
 
-    public function getData(string $id)
-    {
-        $bayiData = Penduduk::find($id);
-        $parentsData = Penduduk::where('NKK', '=', $bayiData->NKK)->get(['nama', 'hubungan_keluarga', 'NKK']);
-
-        return response()->json([$parentsData, $bayiData]);
-    }
-
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreBayiRequest $bayiRequest, StorePemeriksaanRequest $pemeriksaanRequest): RedirectResponse
     {
-        //
+        $bayiRequest->merge([
+            'pemeriksaan_id' => Pemeriksaan::insertGetId($pemeriksaanRequest->all())
+        ]);
+        PemeriksaanBayi::insert($bayiRequest->all());
+
+        return redirect()->intended(route('bayi.index'))
+            ->with('success', 'Data Bayi berhasil ditambahkan');
     }
 
     /**
@@ -105,15 +108,28 @@ class BayiResource extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateBayiRequest $bayiRequest, UpdatePemeriksaanRequest $pemeriksaanRequest, string $id): RedirectResponse
     {
-        //
+        $isUpdated = false;
+
+        if ($pemeriksaanRequest->all() !== []) {
+            Pemeriksaan::find($id)->update($pemeriksaanRequest->all());
+            $isUpdated = true;
+        }
+
+        if ($bayiRequest->all() !== []) {
+            PemeriksaanBayi::find($id)->update($bayiRequest->all());
+            $isUpdated = true;
+        }
+
+        return redirect()->intended(route('bayi.index'))
+            ->with('success', $isUpdated ? 'Data Bayi berhasil diubah' : 'Namun Data Bayi tidak diubah');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): RedirectResponse
     {
         $check = Pemeriksaan::find($id);
         if (!$check) {
