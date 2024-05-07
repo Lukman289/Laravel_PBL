@@ -3,8 +3,8 @@
 @section('content')
     <div class="flex flex-col bg-white mx-5 mt-5 shadow-[0_-4px_0_0_rgba(29,78,216,1)] rounded-md">
         <div class="flex justify-between items-center w-full py-2 border-b">
-            <p class="text-lg ml-10">Daftar pemeriksaan lansia</p>
-            <a href="{{ url('kader/lansia/create') }}" class="bg-blue-700 text-sm text-white font-bold py-1 px-4 mr-10 rounded">Tambah</a>
+            <p class="text-sm md:text-lg ml-5 md:ml-10">Daftar pemeriksaan lansia</p>
+            <a href="{{ url('kader/lansia/create') }}" class="bg-blue-700 text-sm text-white font-bold py-1 px-4 mr-5 md:mr-10 rounded">Tambah</a>
         </div>
         <div class="flex mt-[30px] mx-10 gap-[30px]">
             <div class="flex w-fit h-full items-center align-middle">
@@ -16,7 +16,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="flex w-full h-full items-center align-middle">
+            {{-- <div class="flex w-full h-full items-center align-middle">
                 <p class="text-base text-neutral-950 text-center pr-[10px]">Cari:</p>
                 <div class="relative flex">
                     <input type="text" class="w-100 border border border-stone-400 text-sm font-normal pl-[10px] pr-28 py-[10px] rounded-[5px] focus:outline-none placeholder:text-neutral-950" id="search" name="search" placeholder="Cari nama di sini">
@@ -26,7 +26,7 @@
                         </svg>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
         @php
