@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Kader\Artikel;
 
-use App\Services\ImageLogic;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Storage;
 
 class UpdateArtikelRequest extends FormRequest
 {
@@ -25,11 +23,11 @@ class UpdateArtikelRequest extends FormRequest
     {
         $this->merge([
             'tag' => implode(',', $this->input('tag', [])),
-            'kader_id' => auth()->user()->kaders[0]->kader_id,
+            /*'kader_id' => auth()->user()->kaders[0]->kader_id,*/
         ]);
 
         $this->request->replace($this->only([
-            'kader_id',
+            /*'kader_id',*/
             'judul',
             'isi',
             'tag',
@@ -47,12 +45,12 @@ class UpdateArtikelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kader_id' => [
+           /* 'kader_id' => [
                 'bail',
                 'required',
                 'integer',
                 'exists:kaders,kader_id'
-            ],
+            ],*/
             'judul' => [
                 'bail',
                 'required',
@@ -92,9 +90,9 @@ class UpdateArtikelRequest extends FormRequest
             /**
              * costum message for kader_id column or field input
              */
-            'kader_id.required' => 'kader ID harus di isi!',
+            /*'kader_id.required' => 'kader ID harus di isi!',
             'kader_id.integer' => 'kader ID harus angka bulat!',
-            'kader_id.exists' => 'kader ID tidak ada!',
+            'kader_id.exists' => 'kader ID tidak ada!',*/
             /**
              * costum message for judul column or field input
              */
@@ -143,7 +141,7 @@ class UpdateArtikelRequest extends FormRequest
         $image = $this->file('foto_artikel');
         if (isset($image)) {
             $this->merge([
-                'foto_artikel' => ImageLogic::upload($image, 'artikel_img')
+                'foto_artikel' => $image
             ]);
         }
     }

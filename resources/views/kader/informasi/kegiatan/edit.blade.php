@@ -7,12 +7,14 @@
         {!! method_field('PUT') !!}
 
         <input type="hidden" name="kegiatan" value="{{json_encode($kegiatan)}}">
+        <input type="hidden" name="updated_at" value="{{$kegiatan->updated_at}}">
         <div class="flex flex-col bg-white mx-5 my-5 rounded-md">
             <div class="flex flex-col lg:grid lg:grid-cols-2 my-[30px] mx-5 lg:mx-10 lg:gap-x-[101px] gap-[23px]">
                 <div class="col-span-1 flex flex-col gap-[23px]">
                     <div class="flex flex-col w-full gap-[20px]">
                         <p class="text-base text-neutral-950">Nama Kegiatan</p>
                         <input type="text" name="nama" class="w-100 text-sm font-normal border border-stone-400 pl-[10px] py-[10px] rounded-[5px] focus:outline-none placeholder:text-gray-300" value="{{ old('nama', $kegiatan->nama) }}" placeholder="Masukkan nama kegiatan">
+                        <p class="text-xs font-normal text-stone-400 mt-[-10px]" id="counter">Nama kegiatan minimal 5 huruf - maximal 100 huruf</p>
                         @error('nama')
                         <span class="text-red-500">{{$message}}</span>
                         @enderror
@@ -20,6 +22,7 @@
                     <div class="flex flex-col w-full h-fill gap-[20px]">
                         <p class="text-base text-neutral-950">Tempat</p>
                         <input type="text" name="tempat" class="w-100 text-sm font-normal border border-stone-400 pl-[10px] py-[10px] rounded-[5px] focus:outline-none placeholder:text-gray-300" value="{{ old('tempat', $kegiatan->tempat) }}" placeholder="Masukkan tempat pelaksanaan">
+                        <p class="text-xs font-normal text-stone-400 mt-[-10px]" id="counter">Tempat kegiatan minimal 5 huruf - maximal 200 huruf</p>
                         @error('tempat')
                         <span class="text-red-500">{{$message}}</span>
                         @enderror
