@@ -1,6 +1,25 @@
 @extends('kader.layouts.template')
 
 @section('content')
+<div class="flex flex-col mt-[30px] mx-10 gap-[30px] relative hidden" id="messageContainer">
+    <div class="flex w-full h-full justify-center items-center absolute" >
+        @if(session('success'))
+            <div class="flex w-full h-full items-center p-4 mb-4 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
+                <p class="mr-4"> <b>BERHASIL </b> {{ session('success') }}</p>
+                <button id="close" class="ml-auto bg-transparent text-green-700 hover:text-green-900">
+                    <span>&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="flex w-full h-full items-center p-4 mb-4 border-2 border-red-500 bg-red-100 text-red-700 rounded-md" id="message">
+                <p class="mr-4">{{ session('error') }}</p>
+                <button id="close" class="ml-auto bg-transparent text-red-700 hover:text-red-900">
+                    <span>&times;</span>
+                </button>
+            </div>
+        @endif
+    </div>
+</div>
 <div class="grid lg:grid-cols-3 mx-5 mt-5 sm:mb-5 lg:mb-5 gap-5">
     @php
         $golongan = ['Bayi', 'Lansia'];
@@ -9,9 +28,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Jumlah {{ $data['golongan_all'][$i]->golongan ?? $golongan[$i] }}</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             <h1 class="text-5xl font-medium">{{ $data['golongan_all'][$i]->total ?? 0}}</h1>
             <p class="text-xs text-stone-400 pb-4">Seluruhnya</p>
@@ -19,9 +35,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Jumlah {{ $data['golongan_subMonth'][$i]->golongan ?? $golongan[$i] }}</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             <h1 class="text-5xl font-medium">{{ $data['golongan_subMonth'][$i]->total ?? 0}}</h1>
             <p class="text-xs text-stone-400 pb-4">Sebulan Terakhir</p>
@@ -29,9 +42,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Jumlah {{ $data['status'][$i]->golongan ?? $golongan[$i]}} Sakit</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             {{-- {{ !empty($data['status'][$i]) ? $data['status'][$i]->total : 0}} --}}
             {{-- this bellow code same above code--}}
@@ -46,9 +56,6 @@
     <div class="flex flex-col col-span-3 lg:col-span-1 w-full bg-white rounded-2xl pr-6 pl-7 lg:mb-10 gap-9">
         <div class="flex w-full justify-between pt-5">
             <p class="font-medium text-sm lg:text-base">Kunjungan Anggota</p>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-            </svg>
         </div>
         <div class="z-10">
             {!! $chart->container() !!}
@@ -61,11 +68,6 @@
             <p class="font-medium lg:text-xl">Agenda Posyandu</p>
             <div class="flex gap-4">
                 <x-input.search-input name="searchInput" placeholder="Cari nama atau tempat kegiatan"></x-input.search-input>
-                <div class="border flex items-center rounded-full py-1 px-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="0A0A0A" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-3.5 h-3.5 ">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                      </svg>
-                </div>
             </div>
         </div>
         <x-table.data-table :dt="$data['kegiatan']" 
@@ -171,6 +173,39 @@
                 `;
             }
         }
+        document.getElementById('searchInput').addEventListener('keyup', searchFunction);
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const closeButton = document.getElementById('close');
+
+        if (message) {
+            messageContainer.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            }, 3000);
+            
+            // Hide message on close button click
+            closeButton.addEventListener('click', function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            });
+        }
+    });
+
+    // jQuery to handle fade out effect after 5 seconds
+    $(document).ready(function (){
+        setTimeout(function() {
+            $('#message').fadeOut('fast', function() {
+                $(this).addClass('hidden');
+                $('#messageContainer').addClass('hidden');
+            });
+        }, 3000);
+    });
     </script>
     <script src="{{ $chart->cdn() }}"></script>
     {{$chart->script() }}

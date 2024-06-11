@@ -6,14 +6,14 @@
             <p class="text-sm md:text-lg ml-10">Daftar pemeriksaan bayi</p>
             <a href="{{ url('kader/bayi/create') }}" class="bg-blue-700 text-sm text-white font-bold py-1 px-4 mr-5 lg:mr-10 rounded">Tambah</a>
         </div>
-        <div class="flex flex-row justify-between mt-[30px] mx-5 lg:mx-10 gap-[30px] relative">
+        <div class="flex flex-col justify-between my-[30px] mx-5 lg:mx-10 gap-[30px] relative">
             <div class="flex flex-row w-fit h-full items-center align-middle gap-4">
                 <x-dropdown.dropdown-filter><span class="hidden lg:flex">Filter</span></x-dropdown.dropdown-filter>
                 <x-input.search-input name="search" placeholder="Cari nama bayi"></x-input.search-input>
             </div>
-            <div class="flex w-full h-full justify-center items-center absolute" id="message">
+            <div class="flex w-full h-full justify-center items-center hidden" id="messageContainer">
                 @if(session('success'))
-                    <div class="flex w-full h-full items-center p-1 mb-1 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
+                    <div class="flex w-full h-full items-center p-2 mb-1 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
                         <p class="mr-4"> <b>BERHASIL </b> {{ session('success') }}</p>
                         <button id="close" class="ml-auto bg-transparent text-green-700 hover:text-green-900">
                             <span>&times;</span>
@@ -42,7 +42,7 @@
         <input type="hidden" name="where" id="whereName" value="{{encrypt('golongan')}}">
         <input type="hidden" name="where" id="whereValue" value="{{encrypt('bayi')}}">
 
-        <div class="mx-10 my-[30px] overflow-x-auto">
+        <div class="mx-10 mb-[30px] overflow-x-auto">
             <x-table.data-table :dt="$penduduks" :headers="['Nama Bayi', 'Tgl Pemeriksaan', 'Usia', 'Kategori Umur', 'Berat', 'Tinggi', 'Status', 'Aksi']">
                 @php
                     $no = ($penduduks->currentPage() - 1) * $penduduks->perPage() + 1;
@@ -109,72 +109,7 @@
 @endsection
 
 @push('js')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const deleteButtons = document.querySelectorAll('.delete-btn');
-    //     let deleteFormId;
-
-    //     deleteButtons.forEach(button => {
-    //         button.addEventListener('click', function() {
-    //             deleteFormId = this.getAttribute('data-id');
-    //         });
-    //     });
-
-    //     document.getElementById('confirm-delete').addEventListener('click', function() {
-    //         document.getElementById('delete-form-' + deleteFormId).submit();
-    //     });
-    // });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var div = document.getElementById('message');
-        var button = document.getElementById('close');
-
-        if (div && button) {
-            button.addEventListener('click', function() {
-                div.classList.add('hidden');
-                console.log('test button');
-            });
-        }
-    });
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const modalToggles = document.querySelectorAll('[data-modal-toggle]');
-    //     const modals = document.querySelectorAll('.fixed');
-
-    //     modalToggles.forEach(toggle => {
-    //         toggle.addEventListener('click', function () {
-    //             const modalId = toggle.getAttribute('data-modal-target');
-    //             const modal = document.getElementById(modalId);
-    //             if (modal.classList.contains('hidden')) {
-    //                 modal.classList.remove('hidden');
-    //             } else {
-    //                 modal.classList.add('hidden');
-    //             }
-    //         });
-    //     });
-
-    //     const modalHides = document.querySelectorAll('[data-modal-hide]');
-    //     modalHides.forEach(hide => {
-    //         hide.addEventListener('click', function () {
-    //             const modalId = hide.getAttribute('data-modal-hide');
-    //             const modal = document.getElementById(modalId);
-    //             if (!modal.classList.contains('hidden')) {
-    //                 modal.classList.add('hidden');
-    //             }
-    //         });
-    //     });
-    // });
-
-
-
-    // document.addEventListener('DOMContentLoaded', function(button) {
-    //     console.log('test id');
-    //     button.addEventListener('click', function() {
-    //         div.classList.add('hidden');
-    //         console.log('test button');
-    //     });
-    // });
-
     function filterByKategori(kategori) {
         let url = `/bayi?`;
 
@@ -296,14 +231,9 @@
 
         function calculateAge(ttl){
             let birth = new Date(ttl);
-
-            // Get the current date
             let today = new Date();
-
-            // Calculate the age based on the year difference
             let age = today.getFullYear() - birth.getFullYear();
 
-            // Adjust the age if the birth date hasn't occurred yet this year
             let monthDifference = today.getMonth() - birth.getMonth();
             if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birth.getDate())) {
                 age--;
@@ -441,12 +371,38 @@
         }
 
         document.getElementById('searchInput').addEventListener('keyup', searchFunction);
+    });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const closeButton = document.getElementById('close');
+
+        if (message) {
+            messageContainer.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            }, 3000);
+            
+            // Hide message on close button click
+            closeButton.addEventListener('click', function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            });
+        }
+    });
+
+        // jQuery to handle fade out effect after 5 seconds
         $(document).ready(function (){
             setTimeout(function() {
-                $('#message').fadeOut('fast');
-            }, 5000);
+                $('#message').fadeOut('fast', function() {
+                    $(this).addClass('hidden');
+                    $('#messageContainer').addClass('hidden');
+                });
+            }, 3000);
         });
-    });
     </script>
 @endpush

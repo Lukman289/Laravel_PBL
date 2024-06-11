@@ -1,6 +1,25 @@
 @extends('admin.layouts.template')
 
 @section('content')
+<div class="flex flex-col mt-[30px] mx-10 gap-[30px] relative hidden" id="messageContainer">
+    <div class="flex w-full h-full justify-center items-center absolute" >
+        @if(session('success'))
+            <div class="flex w-full h-full items-center p-4 mb-4 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
+                <p class="mr-4"> <b>BERHASIL </b> {{ session('success') }}</p>
+                <button id="close" class="ml-auto bg-transparent text-green-700 hover:text-green-900">
+                    <span>&times;</span>
+                </button>
+            </div>
+        @elseif(session('error'))
+            <div class="flex w-full h-full items-center p-4 mb-4 border-2 border-red-500 bg-red-100 text-red-700 rounded-md" id="message">
+                <p class="mr-4">{{ session('error') }}</p>
+                <button id="close" class="ml-auto bg-transparent text-red-700 hover:text-red-900">
+                    <span>&times;</span>
+                </button>
+            </div>
+        @endif
+    </div>
+</div>
 <div class="grid mx-5 mt-5 md:mb-5 gap-5 md:grid-cols-3">
     @php
         $golongan = ['Lansia', 'Bayi'];
@@ -10,9 +29,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Total Penduduk</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             <h1 class="text-5xl font-medium">{{ $data['penduduk_all'][$i]->total ?? 0}}</h1>
             <p class="text-xs text-stone-400 pb-4">Seluruhnya</p>
@@ -23,9 +39,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Jumlah Penduduk Laki-Laki</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             <h1 class="text-5xl font-medium">{{ $data['penduduk_laki'][$i]->total ?? 0}}</h1>
             <p class="text-xs text-stone-400 pb-4">Seluruhnya</p>
@@ -36,9 +49,6 @@
         <div class="flex flex-col bg-white rounded-2xl pr-6 pl-7 gap-9">
             <div class="flex w-full justify-between pt-5">
                 <p class="font-medium text-sm lg:text-base">Jumlah Penduduk Perempuan</p>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                </svg>
             </div>
             {{-- {{ !empty($data['status'][$i]) ? $data['status'][$i]->total : 0}} --}}
             {{-- this bellow code same above code--}}
@@ -54,9 +64,6 @@
     <div class="flex flex-col col-span-3 md:col-span-1 w-full bg-white rounded-2xl pr-6 pl-7 md:mb-10 gap-9">
         <div class="flex w-full justify-between pt-5">
             <p class="font-medium text-sm lg:text-base">Kunjungan Anggota</p>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-            </svg>
         </div>
         <div class="z-10">
             {!! $chart->container() !!}
@@ -64,62 +71,154 @@
     </div>
 
     {{-- Card Agenda Posyandu --}}
-    <div class="flex flex-col col-span-3 md:col-span-2 w-full bg-white rounded-2xl pr-6 pl-7 pb-9 gap-5 overflow-x-scroll">
+    <div class="flex flex-col col-span-3 lg:col-span-2 w-full bg-white rounded-2xl pr-6 pl-7 pb-9 gap-5 overflow-x-auto">
         <div class="flex w-full justify-between pt-6 align-middle">
-            <p class="font-medium md:text-xl">Agenda Posyandu</p>
+            <p class="font-medium lg:text-xl">Agenda Posyandu</p>
             <div class="flex gap-4">
-                <div class="relative flex">
-                    <input type="text" class="text-xs md:pl-5 md:pr-4 md:py-2 border rounded-3xl focus:outline-none" id="search" name="search" placeholder="Cari Kegiatan">
-                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="border flex items-center rounded-full py-1 px-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="0A0A0A" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-3.5 h-3.5 ">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                      </svg>
-                </div>
+                <x-input.search-input name="searchInput" placeholder="Cari nama atau tempat kegiatan"></x-input.search-input>
             </div>
         </div>
-        <table class="border-collapse w-full rounded-t-[10px] overflow-hidden">
-            <thead class="bg-gray-200 border-b text-left py-5">
-                <tr class=" text-stone-400">
-                    <th class="font-normal text-xs md:text-sm">Nama Kegiatan</th>
-                    <th class="font-normal text-xs md:text-sm">Tanggal</th>
-                    <th class="font-normal text-xs md:text-sm">Pukul</th>
-                    <th class="font-normal text-xs md:text-sm">Tempat</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($data['kegiatan'] as $item)
-                    <tr class="text-neutral-950 text-left">
-                        <td class="font-normal text-xs md:text-sm">{{ $item->nama }}</td>
-                        <td class="font-normal text-xs md:text-sm">{{ date('d-M-Y', strtotime($item->tgl_kegiatan)) }}</td>
-                        <td class="font-normal text-xs md:text-sm">{{ date('H:i', strtotime($item->jam_mulai)) }} - Selesai</td>
-                        <td class="font-normal text-xs md:text-sm">{{ $item->tempat }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <x-table.data-table :dt="$data['kegiatan']" 
+                            :headers="['Nama Kegiatan', 'Tanggal Pelaksanan', 'Pukul', 'Tempat Pelaksanaan']">
+            @php
+                $no = ($data['kegiatan']->currentPage() - 1) * $data['kegiatan']->perPage() + 1;
+            @endphp
+            @foreach ($data['kegiatan'] as $kd)
+                <x-table.table-row>
+                    <td class="tableBody">{{$kd->nama}}</td>
+                    <td class="tableBody">{{ date('d-M-Y', strtotime($kd->tgl_kegiatan))}}</td>
+                    <td class="tableBody">{{ date('H:i', strtotime($kd->jam_mulai)) }} - Selesai</td>
+                    <td class="tableBody">{{$kd->tempat}}</td>
+                </x-table.table-row>
+            @php
+                $no++;
+            @endphp
+            @endforeach
+            </x-table.data-table>
     </div>
 </div>
-@endsection
 
-@push('css')
-<style>
-    th, td {
-        padding-inline: 20px;
-        padding-block: 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-</style>
-@endpush
+<div class="grid grid-cols-3 mx-5 mt-5 mb-10 gap-5">
+    <iframe  class="w-full h-[600px] col-span-3" src="https://lookerstudio.google.com/embed/reporting/fcb8674d-d125-4e3f-8e8b-3475dcc76775/page/9Jj2D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+</div>
+@endsection
 
 @push('js')
 <script src="{{ $chart->cdn() }}"></script>
 {{$chart->script() }}
+<script>
+    function formatDate(dateString) {
+        const date = new Date(dateString);
 
+        const day = date.getDate().toString().padStart(2, '0'); // Pad single digit days with a leading zero
+        const month = date.toLocaleString('en-US', { month: 'short' }); // Get short month name
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+
+    function formatTime(timeString) {
+        const [hour, minute, second] = timeString.split(':');
+
+        const formattedHour = hour.padStart(2, '0');
+        const formattedMinute = minute.padStart(2, '0');
+
+        return `${formattedHour}:${formattedMinute}`;
+    }
+
+    async function searchFunction() {
+        let input = document.getElementById('searchInput');
+        let search = input.value;
+
+        try {
+            const response = await fetch(`/api/informasi/search?search=${search}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+            });
+
+            const responseData = await response.json();
+
+            clearTable();
+
+            responseData[0].data.forEach(item => {
+                addRowToTable(item);
+            });
+
+            rebindEventListeners();
+
+        } catch (error) {
+            console.log(error);
+            const table = document.getElementById('dataTable');
+
+            clearTable();
+
+            const row = table.insertRow(-1);
+            row.innerHTML = `
+                <td colspan="7" class="text-center p-6 bg-white border-b font-medium text-Neutral/60">Data tidak ditemukan</td>
+                `;
+        }
+    }
+
+    function clearTable() {
+        const table = document.getElementById('dataTable');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+        }
+    }
+
+    function addRowToTable(item) {
+        const table = document.getElementById('dataTable');
+        const row = table.insertRow(-1);
+
+        console.log(`${item.updated_at}`);
+
+        row.innerHTML = `
+            <x-table.table-row>
+                <td class="tableBody">${item.nama}</td>
+                <td class="tableBody">${formatDate(item.tgl_kegiatan)}</td>
+                <td class="tableBody">${formatTime(item.jam_mulai)} - Selesai</td>
+                <td class="tableBody">${item.tempat}</td>
+            </x-table.table-row>
+        `;
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', searchFunction);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const closeButton = document.getElementById('close');
+
+        if (message) {
+            messageContainer.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            }, 3000);
+            
+            // Hide message on close button click
+            closeButton.addEventListener('click', function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            });
+        }
+    });
+
+    // jQuery to handle fade out effect after 5 seconds
+    $(document).ready(function (){
+        setTimeout(function() {
+            $('#message').fadeOut('fast', function() {
+                $(this).addClass('hidden');
+                $('#messageContainer').addClass('hidden');
+            });
+        }, 3000);
+    });
+</script>
 @endpush

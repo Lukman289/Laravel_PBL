@@ -5,16 +5,16 @@
     <div class="flex justify-between items-center w-full py-2 border-b">
         <p class="text-lg ml-10">Daftar Kegiatan</p>
     </div>
-    <div class="flex mt-[30px] mx-10 gap-[30px]">
+    <div class="flex my-[30px] mx-10 gap-[30px]">
         <div class="flex w-fit h-full items-center align-middle">
             <x-input.search-input name="search" placeholder="Cari nama atau tempat kegiatan">Search</x-input.search-input>
         </div>
         <div class="flex w-full h-full items-center align-middle">
         </div>
     </div>
-    <div class="flex w-full justify-center items-center my-4" id="message">
+    <div class="flex w-full justify-center items-center mb-[30px] hidden" id="messageContainer">
         @if(session('success'))
-            <div class="flex w-3/4 h-full items-center p-2 mb-1 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
+            <div class="flex w-3/4 h-full items-center p-2 border-2 border-green-500 bg-green-100 text-green-700 rounded-md" id="message">
                 <p class="mr-4"> <b>BERHASIL </b> {{ session('success') }}</p>
                 <button id="close" class="ml-auto bg-transparent text-green-700 hover:text-green-900">
                     <span>&times;</span>
@@ -34,7 +34,7 @@
     <input type="hidden" name="url" id="url" value="{{encrypt('/kader/informasi/kegiatan/')}}">
     <input type="hidden" name="filterName" id="filterName" value="{{encrypt('kegiatan_id')}}">
 
-    <div class="mx-10 my-[30px] overflow-x-auto lg:overflow-hidden">
+    <div class="mx-10 mb-[30px] overflow-x-auto lg:overflow-hidden">
         <x-table.data-table :dt="$kegiatans"
                             :headers="['Nama Kegiatan', 'Tanggal Pelaksanan', 'Pukul', 'Tempat Pelaksanaan', 'Aksi']">
             @php
@@ -92,7 +92,6 @@
 @endsection
 
 @push('js')
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -235,7 +234,6 @@
                                 $queryString = http_build_query(request()->query());
                                 session(['urlPagination' => $queryString ? '?' . $queryString : '']);
                             @endphp
-                            <a href="kegiatan/${item.kegiatan_id}" class="bg-blue-400 text-[12px] text-neutral-950 py-[5px] px-2 rounded-sm hover:bg-blue-600 hover:text-white">Detail</a>
                             <a href="kegiatan/${item.kegiatan_id}/edit" class="bg-yellow-400 text-[12px] text-neutral-950 py-[5px] px-2 rounded-sm hover:bg-yellow-300">Ubah</a>
                             @csrf
                             @method('DELETE')
@@ -248,12 +246,38 @@
         }
 
         document.getElementById('searchInput').addEventListener('keyup', searchFunction);
+    });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const closeButton = document.getElementById('close');
+
+        if (message) {
+            messageContainer.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            }, 3000);
+            
+            // Hide message on close button click
+            closeButton.addEventListener('click', function() {
+                messageContainer.classList.add('hidden');
+                message.classList.add('hidden');
+            });
+        }
+    });
+
+        // jQuery to handle fade out effect after 5 seconds
         $(document).ready(function (){
             setTimeout(function() {
-                $('#message').fadeOut('fast');
-            }, 5000);
+                $('#message').fadeOut('fast', function() {
+                    $(this).addClass('hidden');
+                    $('#messageContainer').addClass('hidden');
+                });
+            }, 3000);
         });
-    });
 </script>
 @endpush
